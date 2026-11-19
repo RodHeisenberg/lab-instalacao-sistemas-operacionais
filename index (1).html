@@ -1,0 +1,506 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Laboratório de instalação | Professor Rodrigo Moreira</title>
+<style>
+:root{font-family:Inter,"Segoe UI",system-ui,sans-serif;color:#ebf1ff;background:#0b1120;line-height:1.5;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0}button,input,select{font:inherit}button{cursor:pointer}button:disabled{cursor:default;opacity:.55}a{color:#a7c8ff}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid #589eff;outline-offset:3px}
+.shell{max-width:1330px;margin:auto;padding:0 36px}
+header{border-bottom:1px solid #263149}.top{display:flex;justify-content:space-between;align-items:center;gap:15px;padding-block:19px;color:#bccae0;font-size:.9rem}
+.mark{display:inline-grid;place-items:center;width:32px;height:30px;margin-right:9px;border-radius:7px;background:#233756;color:#c9e0ff;font-family:monospace;font-weight:700}
+.intro{padding:27px 0 21px}.intro p{margin:5px 0;color:#aebdd4}
+h1{font-size:clamp(1.9rem,4vw,3.05rem);line-height:1.08;letter-spacing:-.048em;margin:7px 0 12px}
+.switch{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+.outer{background:#141f32;color:#eaf1ff;border:1px solid #34445d;border-radius:9px;padding:9px 14px;font-weight:650}
+.outer[aria-pressed="true"]{background:#233858;border-color:#84b3ff}.outer:hover{background:#293e5d}
+.winlogo{display:inline-grid;grid-template-columns:repeat(2,7px);gap:2px;vertical-align:-1px;margin-right:8px}.winlogo i{width:7px;height:7px;background:#59a7ff}.ubl{color:#ef7954;font-size:1.14em;font-weight:bold;margin-right:7px}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:17px;align-items:start}
+.frame,.aside,.extras{border:1px solid #2c3954;border-radius:13px;overflow:hidden;background:#111a2b}
+.framebar{padding:9px 13px;display:flex;justify-content:space-between;align-items:center;gap:8px;background:#162135;font-size:.85rem;color:#cfdef2}.framebar .outer{padding:5px 8px;font-size:.8rem}
+.screen{padding:clamp(12px,3vw,35px);min-height:490px;display:grid;place-items:center;background:radial-gradient(ellipse at 17% 50%,#355cd2 0,transparent 55%),linear-gradient(130deg,#192e72,#101947 77%);color-scheme:light}
+.screen.ubuntu{background:radial-gradient(ellipse at 25% 85%,#922a46 0,transparent 62%),linear-gradient(140deg,#54204f,#24142e)}
+.screen.uefi{background:#070d16;color-scheme:dark}
+.screen.desktop{min-height:490px;background:radial-gradient(ellipse at 24% 74%,#54abff,transparent 36%),repeating-radial-gradient(ellipse at 70% 17%,#214183 0 6%,#101d58 13% 17%,#2d59a6 20% 26%);position:relative;padding-bottom:70px}
+.screen.desktop.ubuntu{background:radial-gradient(ellipse at 65% 65%,#8b3557,transparent 54%),linear-gradient(125deg,#532c6a,#2a1332 60%,#b34a42)}
+.window{--accent:#0666ca;--pressed:#e8f3ff;--line:#d5deeb;color:#182338;background:#f9fafc;border:1px solid #d3dbec;border-radius:10px;width:min(100%,720px);min-height:380px;box-shadow:0 19px 60px #0309196e;display:flex;flex-direction:column;overflow:hidden}
+.ubuntu .window{--accent:#ad3915;--pressed:#fff0e9;--line:#dfd9d8;background:#fff;border-color:#d6cbd3;color:#30252e}
+.uefi .window{--accent:#236c9a;--pressed:#172c45;--line:#374e67;background:#0d1928;color:#dceeff;border-color:#435d7a;font-family:monospace;min-height:0}
+.titlebar{padding:9px 15px;border-bottom:1px solid var(--line);font-size:.86rem;font-weight:650;display:flex;align-items:center;gap:7px;background:#f0f3f9}
+.ubuntu .titlebar{background:#f4efef}.uefi .titlebar{background:#182a40}
+.content{padding:20px 23px 12px;flex:1;min-width:0}
+.content h2{font-size:clamp(1.25rem,2.6vw,1.67rem);line-height:1.18;margin:0 0 10px;letter-spacing:-.024em}
+p{margin:0 0 10px}.sub{font-size:.91rem;color:#48566c}.ubuntu .sub{color:#625460}.uefi .sub{color:#bed4ec}
+.actions{display:flex;gap:9px;justify-content:flex-end;flex-wrap:wrap;padding:10px 15px;border-top:1px solid var(--line)}
+.btn{background:#fff;color:#172338;border:1px solid #aab8ce;border-radius:5px;padding:6px 11px;font-size:.88rem;font-weight:650}.btn:hover{background:#eef4fc}
+.primary{background:var(--accent);color:#fff;border-color:var(--accent)}.primary:hover{background:var(--accent);filter:brightness(.89)}
+.options{display:grid;gap:6px;margin:10px 0;max-width:580px}
+.choice{display:flex;gap:9px;align-items:flex-start;border:1px solid var(--line);padding:8px 10px;border-radius:6px;cursor:pointer;font-size:.91rem}
+.choice:has(input:checked){background:var(--pressed);border-color:var(--accent)}.choice input{margin:4px 0 0;accent-color:var(--accent)}
+.choice strong,.choice small{display:block}.choice small{font-size:.82rem;opacity:.82}
+.fields{display:grid;gap:9px;margin:10px 0;max-width:530px}.fields.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+.field{display:grid;gap:3px;font-size:.87rem;font-weight:620}
+.field input,.field select{width:100%;min-width:0;padding:6px 8px;color:inherit;border:1px solid var(--line);border-radius:5px;background:transparent;font-weight:450}.field select option{color:#111}.notice{font-size:.86rem;background:#fff3da;color:#592d08;border-left:3px solid #bd7325;padding:9px 10px;margin:9px 0;border-radius:3px}.notice:empty{display:none}.good{background:#e7f6ee;color:#14432e;border-color:#2e865c}
+.diskwrap{overflow:auto;margin:10px 0}.disk{width:100%;border-collapse:collapse;font-size:.82rem;min-width:385px}.disk th,.disk td{text-align:left;border-bottom:1px solid var(--line);padding:6px 7px}.disk tbody tr:has(input:checked){background:var(--pressed)}.disk label{cursor:pointer;display:flex;align-items:center;gap:6px}.disk input{accent-color:var(--accent);margin:0}.tools{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+.aside{padding:15px}.aside h2{margin:0;font-size:1.04rem}.aside h3{margin:10px 0 4px;font-size:.88rem;color:#b9d3ff}.aside p{margin:8px 0;font-size:.88rem;color:#c1cfe4}
+.route{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:3px}.route li{padding:5px 8px;border-left:2px solid #34445d;color:#aab9d0;font-size:.83rem}.route li[aria-current="step"]{background:#253853;color:#f1f6ff;border-color:#8eb9ff;font-weight:700}.route li.done{border-color:#60baaa;color:#c2ebde}
+progress{width:100%;height:9px;accent-color:#63a8ff}.window progress{height:12px;accent-color:var(--accent)}
+.extras{margin:16px 0;padding:13px 16px}.extras summary{cursor:pointer;font-weight:650}.extras p,.extras li{font-size:.93rem;color:#c0cde2}.extras p:first-of-type{margin-top:12px}.extras h3{font-size:1rem;margin-bottom:5px}.extras select{padding:6px;max-width:100%}.extras .outer{margin:6px;font-size:.86rem}
+.scenarios{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.case{border:1px solid #34445d;border-radius:8px;padding:10px;margin-top:12px}.case [role=status]{min-height:3em}
+footer{padding:8px 0 28px;color:#a4b5d0;font-size:.83rem}
+.taskbar{position:absolute;bottom:0;left:0;right:0;background:#141d35df;color:#fff;display:flex;justify-content:center;gap:8px;padding:8px;flex-wrap:wrap}.taskbar .btn{background:#243657;color:#fff;border-color:#657b9a}.ubuntu .taskbar{background:#211321eb}.desktop .window{min-height:220px}.mono{font-family:ui-monospace,Consolas,monospace}.frame:fullscreen{display:flex;flex-direction:column;border:0;border-radius:0}.frame:fullscreen .screen{flex:1;min-height:0;overflow:auto}
+.preflight{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin:12px 0}.preflight div{padding:7px 9px;border:1px solid var(--line);border-radius:6px;font-size:.86rem}.preflight strong{display:block}.center{text-align:center}.orb{margin:10px auto 15px;width:54px;height:54px;border:6px solid var(--line);border-top-color:var(--accent);border-radius:50%;animation:turn 1.2s linear infinite}@keyframes turn{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.orb{animation:none}}
+@media(max-width:920px){.shell{padding-inline:18px}.layout{grid-template-columns:minmax(0,1fr) 224px}.scenarios{grid-template-columns:1fr}}
+@media(max-width:690px){.layout{grid-template-columns:1fr}.screen{min-height:430px}.content{padding-inline:13px}.top{font-size:.78rem}.fields.two{grid-template-columns:1fr}.aside{padding:12px}.route{grid-template-columns:repeat(2,minmax(0,1fr))}.framebar{flex-wrap:wrap}}
+</style>
+</head>
+<body>
+<header><div class="shell top"><div><span class="mark" aria-hidden="true">&gt;_</span><strong>Laboratório de Sistemas Operacionais</strong></div><span>Professor Rodrigo Moreira</span></div></header>
+<main class="shell">
+<section class="intro"><h1>Instalação de sistemas operacionais</h1><p>Da imagem ISO ao primeiro acesso em uma máquina virtual simulada.</p></section>
+<div class="switch" aria-label="Sistema operacional">
+<button class="outer" type="button" id="windows" aria-pressed="true"><span class="winlogo" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Windows 11</button>
+<button class="outer" type="button" id="ubuntu" aria-pressed="false"><span class="ubl" aria-hidden="true">●</span>Ubuntu Desktop 24.04 LTS</button>
+</div>
+<div class="layout">
+<section class="frame" id="frame" aria-label="Máquina virtual simulada">
+<div class="framebar"><span id="machine"></span><div><button class="outer" id="full" type="button">Tela cheia</button> <button class="outer" id="reset" type="button">Reiniciar lab</button></div></div>
+<div id="screen" class="screen"></div></section>
+<aside class="aside" aria-label="Roteiro da demonstração">
+<h2>Guia da instalação</h2><p id="step-count"></p><progress id="lesson-progress" aria-label="Progresso no roteiro"></progress>
+<ol id="route" class="route"></ol>
+<h3>Para explicar em aula</h3><p id="coach"></p>
+</aside>
+</div>
+<details class="extras"><summary>Roteiro do professor</summary>
+<p><strong>Antes do boot</strong> “Pessoal, a ISO é a imagem da mídia de instalação. Na máquina virtual eu conecto essa imagem como se colocasse um disco no leitor. Reparem que o disco virtual onde vamos instalar o sistema aparece separado da mídia de instalação.”</p>
+<p><strong>Windows</strong> “Antes de avançar, me digam qual disco é o SSD de 64 GB e qual guarda os arquivos. Vou criar a partição de instalação e a gente vai olhar o que o Windows colocou junto dela para conseguir iniciar.”</p>
+<p><strong>Ubuntu</strong> “Vou seguir pelo particionamento manual para vocês verem onde ficam os arquivos de boot e onde fica o sistema. Quem consegue me dizer por que a partição EFI usa FAT32 e a raiz pode usar ext4?” Resposta esperada. O firmware lê a partição EFI para carregar os arquivos de inicialização. O Ubuntu usa a raiz para organizar o sistema e seus arquivos.</p>
+<p><strong>Primeiro acesso</strong> “Depois do reinício, de onde a máquina deve iniciar? E o que temos de conferir antes de entregar esse computador para alguém usar?” Peça à turma que confira atualizações, drivers, rede, periféricos e serviços necessários.</p>
+</details>
+<details class="extras"><summary>Desktop ou Server? Três casos para a turma</summary><div class="scenarios" id="scenarios"></div></details>
+<details class="extras"><summary>Documentação oficial</summary><ul>
+<li><a href="https://support.microsoft.com/pt-br/windows/deployment/install-upgrade/reinstall-windows-with-the-installation-media" target="_blank" rel="noopener">Microsoft. Reinstalar o Windows com a mídia de instalação</a></li>
+<li><a href="https://ubuntu.com/desktop/docs/en/24.04/tutorial/install-ubuntu-desktop/" target="_blank" rel="noopener">Canonical. Instalar o Ubuntu Desktop 24.04 LTS</a></li>
+</ul></details>
+<footer>Telas recriadas para ensino. Os discos, as redes e as contas pertencem ao ambiente simulado.</footer>
+</main>
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const screen=$("screen");
+const names={windows:"Windows 11",ubuntu:"Ubuntu Desktop 24.04 LTS"};
+const tracks={
+ windows:[
+  ["Máquina virtual","Antes de instalar Windows 11, confira a compatibilidade do processador, a RAM, o armazenamento, UEFI com suporte a Secure Boot e TPM 2.0. A ISO é conectada a uma unidade óptica virtual."],
+  ["Boot pela ISO","Boot é o início da máquina. Na primeira partida, escolha a mídia UEFI que contém o instalador. Um disco novo ainda não tem um sistema para iniciar."],
+  ["Preferências do instalador","Idioma, região e teclado determinam como a instalação aparece e como as teclas são interpretadas. O teclado ABNT2 inclui a tecla Ç."],
+  ["Edição e licença","Use a edição correspondente à licença. Em máquinas com chave no firmware, algumas telas podem ser puladas pelo próprio instalador."],
+  ["Disco e partições","UEFI é o firmware. GPT é o esquema de partições. Verifique tamanho e identidade do disco antes de criar, formatar ou remover uma partição."],
+  ["Instalação e reinício","A instalação grava arquivos no SSD virtual. Depois do primeiro reinício, deixe a máquina iniciar pelo Windows Boot Manager."],
+  ["Primeiro acesso","A configuração inicial do Windows também é chamada de OOBE. O fluxo pode variar com versão, região, edição, rede e conta."],
+  ["Pós-instalação","Confira Windows Update, drivers, ativação e serviços necessários. Valide a rede e um periférico antes de entregar a máquina."]
+ ],
+ ubuntu:[
+  ["Máquina virtual","Use uma máquina virtual com disco separado da mídia ISO. Nesta demonstração, o firmware virtual é UEFI."],
+  ["Boot pela ISO","O menu da VM escolhe a mídia. Em seguida, o menu do Ubuntu inicia o ambiente que carrega o assistente gráfico."],
+  ["Preferências e modo live","O modo live executa o Ubuntu a partir da mídia. Ele serve para experimentar a interface e verificar dispositivos antes de instalar."],
+  ["Tipo e opções de instalação","A instalação interativa pergunta as preferências. A automatizada usa uma configuração preparada para repetir instalações."],
+  ["Disco e partições","No modo manual, mostre a partição EFI em FAT32 e a raiz / em ext4. A swap pode ser um arquivo, como na instalação padrão, ou uma partição."],
+  ["Conta e fuso horário","O nome do computador aparece na rede. O usuário local entra com a senha definida no instalador."],
+  ["Instalação e GRUB","Ao instalar em UEFI, os arquivos do carregador ficam na partição EFI. O GRUB carrega o Linux. O menu pode ficar oculto quando há um só sistema."],
+  ["Pós-instalação","Use as verificações simuladas para localizar a raiz ext4, confirmar a swap e identificar a entrada UEFI do Ubuntu."]
+ ]
+};
+const phases={
+ vm:0,boot:1,grubiso:1,wlang:2,wkeys:2,wsetup:2,wkey:3,wedition:3,wlicense:3,wdisk:4,wreview:4,
+ wprogress:5,wreboot:5,wregion:6,wlayout:6,wnetwork:6,waccount:6,wpin:6,wprivacy:6,wdesk:7,
+ ulang:2,uaccess:2,ukeys:2,unetwork:2,utry:2,ulive:2,utype:3,uapps:3,udrivers:3,udisk:4,umanual:4,uerase:4,
+ uaccount:5,uzone:5,ureview:6,uprogress:6,ureboot:6,ulogin:6,udesk:7
+};
+const initial=()=>({page:"vm",stack:[],values:{},iso:false,parts:[],manual:[],winDisk:"free",target:"ssd",notice:"",panel:""});
+let labs={windows:initial(),ubuntu:initial()};
+let os="windows",timer;
+const lab=()=>labs[os];
+const safe=value=>String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const title=(heading,description="")=>`<h2 id="screen-title" tabindex="-1">${heading}</h2>${description?`<p class="sub">${description}</p>`:""}`;
+const btn=(label,action,primary=false,disabled=false)=>`<button type="button" class="btn${primary?" primary":""}" data-action="${action}" ${disabled?"disabled":""}>${label}</button>`;
+const back=()=>lab().stack.length?btn("Voltar","back"):"";
+const next=(page,label="Avançar")=>btn(label,"goto:"+page,true);
+function option(key,value,label,detail="",type="radio",fallback=""){
+ const current=lab().values[key]??fallback;
+ const checked=type==="radio"?current===value:Boolean(current);
+ return `<label class="choice"><input type="${type}" name="${key}" value="${value}" ${checked?"checked":""}><span><strong>${label}</strong>${detail?`<small>${detail}</small>`:""}</span></label>`;
+}
+const options=(...rows)=>`<div class="options">${rows.join("")}</div>`;
+function select(key,label,items,fallback=items[0]){
+ const chosen=lab().values[key]??fallback;
+ return `<label class="field">${label}<select name="${key}">${items.map(x=>`<option${x===chosen?" selected":""}>${safe(x)}</option>`).join("")}</select></label>`;
+}
+const field=(key,label,fallback="",type="text")=>`<label class="field">${label}<input name="${key}" type="${type}" value="${safe(lab().values[key]??fallback)}" autocomplete="off"></label>`;
+const notice=()=>`<div class="notice" id="feedback" role="status">${safe(lab().notice)}</div>`;
+const files={windows:"Win11_x64.iso",ubuntu:"ubuntu-24.04-desktop-amd64.iso"};
+const progressScreen=(heading,desc)=>[title(heading,desc)+`<div class="center"><div class="orb" aria-hidden="true"></div><p id="progress-label">Preparando a instalação</p></div><progress id="install-progress" value="0" max="100" aria-label="Andamento da instalação"></progress>`,""];
+const disks=(name,rows,selected)=>`<div class="diskwrap"><table class="disk"><thead><tr><th>Nome</th><th>Tamanho</th><th>Tipo ou função</th></tr></thead><tbody>${rows.map(([id,label,size,kind])=>`<tr><td>${id?`<label><input type="radio" name="${name}" value="${id}" ${id===selected?"checked":""}>${safe(label)}</label>`:safe(label)}</td><td>${safe(size)}</td><td>${safe(kind)}</td></tr>`).join("")}</tbody></table></div>`;
+const winParts=[
+ ["efi","Disco 0 Partição 1","260 MB","Sistema EFI (FAT32)"],
+ ["msr","Disco 0 Partição 2","16 MB","Reservado (MSR)"],
+ ["main","Disco 0 Partição 3","62,7 GB","Primário (NTFS na instalação)"],
+ ["recovery","Disco 0 Partição 4","1 GB","Recuperação"]
+];
+const dataWin=["data","Disco 1 Partição 1","128 GB","Dados do laboratório (NTFS)"];
+const dataUbuntu=["data","/dev/sdb","128 GB","Disco de arquivos"];
+const uefiRow=["efi","/dev/sda1","1 GB","FAT32 · /boot/efi"];
+const rootRow=["root","/dev/sda2","55 GB","ext4 · /"];
+const swapRow=["swap","/dev/sda3","4 GB","Área de troca (swap)"];
+const keyboard=["Português (Brasil ABNT2)","Português (Brasil ABNT)","Inglês (Estados Unidos)"];
+const sampleAccount="aluno@exemplo.invalid";
+function template(){
+ const s=lab(),v=s.values;
+ switch(s.page){
+ case "vm":return [title("Preparar a máquina virtual","A mídia contém o instalador. O SSD virtual é o destino.")+
+  `<div class="preflight"><div><strong>Firmware</strong>UEFI · GPT no disco de destino</div><div><strong>Memória e CPU</strong>8 GB de RAM · 4 núcleos virtuais</div><div><strong>Armazenamento</strong>SSD de 64 GB + disco de dados de 128 GB</div><div><strong>Segurança virtual</strong>TPM 2.0 e Secure Boot habilitados</div></div>
+  <div class="fields">${select("media","Unidade óptica virtual",[files[os],"Atualmente sem mídia"])}</div>${s.iso?'<p class="notice good">ISO conectada à unidade óptica.</p>':""}`,
+  btn("Conectar ISO","attach")+btn("Ligar máquina","power",true)];
+ case "boot":return [title("Boot Manager","Selecione o dispositivo para iniciar a máquina virtual.")+options(
+   option("bootChoice","iso","UEFI: Virtual CD/DVD",s.iso?files[os]:"Unidade sem mídia"),
+   option("bootChoice","disk","UEFI: Virtual SSD","Disco virtual de 64 GB")),back()+btn("Iniciar","boot",true)];
+ case "grubiso":return [title("GNU GRUB","Menu de inicialização da mídia Ubuntu.")+
+  options(option("grub","normal","Try or Install Ubuntu","Iniciar com as configurações padrão","radio","normal"),
+  option("grub","safe","Ubuntu (safe graphics)","Modo de vídeo básico para diagnóstico")),back()+next("ulang","Iniciar")];
+ case "wlang":return [title("Selecionar configurações de idioma")+ `<div class="fields">${select("language","Idioma para instalar",["Português (Brasil)","Inglês (Estados Unidos)"])}${select("time","Formato de hora e moeda",["Português (Brasil)","Inglês (Estados Unidos)"])}</div>`,back()+next("wkeys")];
+ case "wkeys":return [title("Selecionar configurações do teclado")+`<div class="fields">${select("keyboard","Teclado ou método de entrada",keyboard)}${field("wtest","Campo de teste do teclado")}</div>`,back()+next("wsetup")];
+ case "wsetup":return [title("Selecionar opção de configuração")+options(
+  option("setup","install","Instalar o Windows 11","","radio","install"),option("setup","repair","Reparar meu computador","Abre as ferramentas de recuperação"),
+  option("wipeWin","yes","Confirmo que os dados do destino serão excluídos","Instalação limpa no SSD virtual de 64 GB.","checkbox")),back()+btn("Avançar","wsetup",true)];
+ case "wkey":return [title("Chave do produto","Nesta VM, pratique com uma máquina que já tem direito a uma licença digital para a edição Pro.")+
+  '<p class="sub">Em uma instalação real, a licença deve ser compatível com a edição escolhida.</p>',back()+next("wedition","Não tenho uma chave do produto")];
+ case "wedition":return [title("Selecionar imagem")+options(option("edition","Home","Windows 11 Home","","radio","Home"),
+  option("edition","Pro","Windows 11 Pro","Edição vinculada à licença fictícia da VM")),back()+btn("Avançar","edition",true)];
+ case "wlicense":return [title("Avisos e termos de licença aplicáveis","Nesta simulação, avance pelo ponto em que o instalador apresenta os termos da edição escolhida.")+
+  '<p class="sub">Em uma instalação real, leia os termos exibidos pelo instalador antes de prosseguir.</p>',back()+next("wdisk","Aceitar")];
+ case "wdisk":return [title("Selecionar local para instalar o Windows 11","Ambiente virtual com um SSD disponível e um disco que contém arquivos.")+
+  disks("winDisk",[...(s.parts.length?s.parts:[["free","Disco 0 Espaço Não Alocado","64 GB","SSD virtual · GPT"]]),dataWin],s.winDisk)+
+  `<div class="tools">${btn("Criar partição","wcreate",false,s.parts.length>0||s.winDisk!=="free")}${btn("Excluir partição","wdelete",false,!s.parts.length||s.winDisk==="data")}</div>`+
+  (s.panel==="wsize"?`<div class="fields">${field("size","Tamanho solicitado em MB","65536","number")}</div>${btn("Aplicar","wapply")}`:"")+
+  (s.panel==="wdelete"?`<p class="notice">O laboratório reverte o layout criado no SSD para demonstrar a exclusão. O Disco 1 guarda dados.</p>${btn("Confirmar exclusão no SSD","wconfirmdel")}`:""),
+  back()+btn("Avançar","wdisk",true)];
+ case "wreview":return [title("Pronto para instalar","Confira a edição e o disco antes de gravar os arquivos.")+
+  `<p><strong>Windows 11 Pro</strong> · Disco 0 · SSD virtual de 64 GB</p>${disks("preview",winParts.map(([,a,b,c])=>["",a,b,c]))}`,back()+next("wprogress","Instalar")];
+ case "wprogress":return progressScreen("Instalando o Windows 11","A máquina pode reiniciar durante a instalação.");
+ case "wreboot":return [title("Reinicialização da máquina virtual","O instalador concluiu a cópia inicial. Escolha de onde a máquina deve iniciar.")+options(
+  option("wRestartChoice","iso","UEFI: Virtual CD/DVD",files.windows),option("wRestartChoice","ssd","Windows Boot Manager","SSD virtual de 64 GB")),
+  btn("Iniciar","wreboot",true)];
+ case "wregion":return [title("Este é o país ou região certo?")+`<div class="fields">${select("region","País ou região",["Brasil","Portugal","Estados Unidos"])}</div>`,next("wlayout","Sim")];
+ case "wlayout":return [title("Este é o layout de teclado correto?")+`<div class="fields">${select("wLayout","Layout de teclado",keyboard,v.keyboard??keyboard[0])}</div>`,
+  back()+next("wnetwork","Sim")];
+ case "wnetwork":return [title("Vamos conectar você a uma rede")+options(
+  option("winNet","connected","Ethernet virtual","Rede de demonstração"),option("winNet","none","Cabo desconectado","A máquina está sem acesso à rede")),back()+btn("Avançar","wnetwork",true)];
+ case "waccount":return [title("Vamos adicionar sua conta Microsoft","Use o endereço fictício mostrado abaixo.")+
+  `<div class="fields">${field("winAccount","Conta de demonstração",sampleAccount,"email")}</div>`,back()+btn("Entrar","waccount",true)];
+ case "wpin":return [title("Criar um PIN","Use 2468, o PIN fictício da máquina virtual.")+
+  `<div class="fields">${field("pin","PIN de demonstração","","password")}</div>`,back()+btn("OK","wpin",true)];
+ case "wprivacy":return [title("Escolher configurações de privacidade")+options(
+  option("location","yes","Localização","Permitir que o dispositivo use a localização.","checkbox"),
+  option("diag","yes","Dados de diagnóstico opcionais","Enviar dados adicionais para diagnóstico.","checkbox")),back()+next("wdesk","Aceitar")];
+ case "wdesk":return desktop();
+ case "ulang":return [title("Escolha seu idioma")+`<div class="fields">${select("lang","Idioma do instalador",["Português do Brasil","English","Español"])}</div>`,back()+next("uaccess","Seguinte")];
+ case "uaccess":return [title("Acessibilidade")+options(option("contrast","yes","Alto contraste","Preferência da instalação de demonstração.","checkbox"),
+  option("reader","yes","Leitor de tela","Preferência da instalação de demonstração.","checkbox")),back()+next("ukeys","Seguinte")];
+ case "ukeys":return [title("Layout do teclado")+`<div class="fields">${select("uKeyboard","Layout",["Português (Brasil)","Inglês (EUA)","Espanhol"])}${field("utest","Teste o teclado aqui")}</div>`,back()+next("unetwork","Seguinte")];
+ case "unetwork":return [title("Conectar à internet","A rede permite baixar atualizações e alguns componentes durante a instalação.")+options(
+  option("uNet","wired","Usar conexão com fio","Ethernet virtual","radio","wired"),option("uNet","offline","Não conectar à internet","A instalação do Ubuntu pode prosseguir offline.")),back()+next("utry","Seguinte")];
+ case "utry":return [title("Experimentar ou instalar o Ubuntu")+options(
+  option("try","try","Experimentar Ubuntu","Abra uma sessão temporária pela mídia."),
+  option("try","install","Instalar Ubuntu","Inicie o assistente de instalação no SSD.","radio","install")),back()+btn("Seguinte","utry",true)];
+ case "ulive":return [title("Ubuntu · Sessão live","Você iniciou um ambiente temporário a partir da ISO.")+
+  '<p>Esta etapa serve para conferir vídeo, teclado e rede antes de instalar o sistema no SSD.</p>',back()+next("utype","Instalar Ubuntu")];
+ case "utype":return [title("Tipo de instalação")+options(
+  option("uType","interactive","Instalação interativa","Responda às perguntas do assistente.","radio","interactive"),
+  option("uType","auto","Instalação automatizada","Importa um arquivo de configuração para reproduzir instalações.")),back()+btn("Seguinte","utype",true)];
+ case "uapps":return [title("Aplicativos")+options(
+  option("apps","default","Seleção padrão","Aplicativos essenciais.","radio","default"),
+  option("apps","extended","Seleção estendida","Inclui ferramentas adicionais de escritório e utilitários.")),back()+next("udrivers","Seguinte")];
+ case "udrivers":return [title("Otimize seu computador")+options(
+  option("drivers","yes","Instalar software de terceiros para hardware gráfico e Wi-Fi","","checkbox"),
+  option("codecs","yes","Baixar e instalar suporte a formatos adicionais de mídia","","checkbox")),back()+next("udisk","Seguinte")];
+ case "udisk":return [title("Configuração do disco","Escolha como preparar o SSD virtual de 64 GB.")+options(
+  option("method","erase","Apagar disco e instalar Ubuntu","O instalador prepara o disco selecionado.","radio","erase"),
+  option("method","manual","Particionamento manual","Crie a EFI, a raiz em ext4 e, se quiser, uma partição swap.")),
+  back()+btn("Seguinte","udisk",true)];
+ case "uerase":return [title("Apagar disco e instalar Ubuntu","Confirme a identidade do disco antes de seguir.")+
+  disks("target",[["ssd","/dev/sda","64 GB","SSD virtual de destino"],dataUbuntu],s.target)+
+  '<p class="notice">A instalação apaga os dados do disco selecionado. Neste laboratório, o disco de 128 GB deve ser preservado.</p>',
+  back()+btn("Seguinte","uerase",true)];
+ case "umanual":return manual();
+ case "uaccount":return [title("Crie sua conta","Use apenas dados fictícios. Para o exercício, a senha é lab12345.")+
+  `<div class="fields two">${field("person","Seu nome","Aluno do laboratório")}${field("host","Nome do computador","ubuntu-lab")}${field("user","Nome de usuário","aluno")}${field("password","Senha de demonstração","lab12345","password")}${field("confirm","Confirme a senha","lab12345","password")}</div>`,
+  back()+btn("Seguinte","uaccount",true)];
+ case "uzone":return [title("Selecione seu fuso horário")+`<div class="fields">${select("zone","Localização",["São Paulo · America/Sao_Paulo","Manaus · America/Manaus","Lisboa · Europe/Lisbon"])}</div>`,
+  back()+next("ureview","Seguinte")];
+ case "ureview":return [title("Pronto para instalar","Revise as alterações que serão aplicadas ao SSD virtual.")+
+  `<p><strong>Ubuntu Desktop 24.04 LTS</strong> · /dev/sda · 64 GB · ${v.method==="manual"?"Particionamento manual":"Apagar disco e instalar"}</p>`+
+  disks("preview",summaryUbuntu().map(([,a,b,c])=>["",a,b,c]))+
+  `<p class="sub">Inicialização UEFI com GRUB. ${s.manual.includes("swap")&&v.method==="manual"?"Swap em partição dedicada.":"Swap em arquivo na partição raiz nesta demonstração."}</p>`,
+  back()+next("uprogress","Instalar")];
+ case "uprogress":return progressScreen("Instalando o Ubuntu","O instalador cria o sistema de arquivos, copia pacotes e configura a inicialização.");
+ case "ureboot":return [title("Instalação concluída","Remova a mídia virtual e pressione Enter para iniciar pelo SSD.")+
+  `<p class="notice ${s.iso?"":"good"}">${s.iso?"Mídia de instalação conectada à unidade óptica.":"Mídia removida. A entrada ubuntu pode carregar o GRUB a partir do SSD."}</p>`,
+  btn("Remover ISO","eject",false,!s.iso)+btn("Pressionar Enter","ureboot",true)];
+ case "ulogin":return [title("Ubuntu · Primeiro acesso",`Usuário: ${safe(v.user??"aluno")}. Use a senha fictícia definida na instalação.`)+
+  `<div class="fields">${field("login","Senha de demonstração","","password")}</div>`,btn("Entrar","ulogin",true)];
+ case "udesk":return desktop();
+ }
+}
+function summaryUbuntu(){
+ const s=lab();
+ if(s.values.method!=="manual")return [["efi","/dev/sda1","1 GB","FAT32 · /boot/efi"],["root","/dev/sda2","63 GB","ext4 · /"]];
+ return [uefiRow,rootRow,swapRow].filter(([id])=>s.manual.includes(id));
+}
+function manual(){
+ const s=lab(),v=s.values;
+ const remaining=64-(s.manual.includes("efi")?1:0)-(s.manual.includes("root")?55:0)-(s.manual.includes("swap")?4:0);
+ const rows=[...summaryUbuntu(),["free","Espaço livre em /dev/sda",remaining+" GB","SSD virtual · GPT"],dataUbuntu];
+ return [title("Particionamento manual","Selecione o espaço livre do SSD e adicione as partições.")+
+  disks("manualDisk",rows,v.manualDisk??"free")+
+  `<div class="tools">${btn("+ Adicionar partição","uadd",false,(v.manualDisk??"free")!=="free")}${btn("Limpar layout do SSD","uclear",false,!s.manual.length)}</div>`+
+  (s.panel==="uadd"?`<div class="fields">${select("partition","Usar como",["Partição do sistema EFI","Ext4","Área de troca (swap)"])}${select("mount","Ponto de montagem",["/boot/efi","/","Nenhum"])}${select("capacity","Tamanho",["1 GB","55 GB","4 GB"])}</div>${btn("Criar partição","uapply")}`:""),
+  back()+btn("Seguinte","umanual",true)];
+}
+function desktop(){
+ const s=lab(),v=s.values,win=os==="windows";
+ const panels=win?[
+  ["system","Configurações",`<p><strong>Windows 11 Pro</strong> · ${safe(v.region??"Brasil")}</p><p>VM inicializada pelo Windows Boot Manager em UEFI.</p>`],
+  ["update","Windows Update","<p>Verificação de demonstração concluída. Em uma máquina real, procure atualizações, instale as necessárias e reinicie se for solicitado.</p>"],
+  ["drivers","Gerenciador de Dispositivos","<p>Confira vídeo, rede e áudio. Um triângulo amarelo indica um dispositivo que precisa de atenção. Teste também a impressora ou outro periférico necessário.</p>"]
+ ]:[
+  ["system","Configurações",`<p><strong>Ubuntu 24.04 LTS</strong> · ${safe(v.host??"ubuntu-lab")}</p><p>Rede: ${v.uNet==="offline"?"sem conexão configurada":"Ethernet virtual"}. Verifique as atualizações pelo Atualizador de Programas após conectar a rede.</p>`],
+  ["disk","Discos",disks("inspection",summaryUbuntu().map(([,a,b,c])=>["",a,b,c]))],
+  ["terminal","Terminal",`<p class="mono">$ swapon --show<br>NAME &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; TYPE<br>${v.method==="manual"&&s.manual.includes("swap")?"/dev/sda3 &nbsp; partition":"/swap.img &nbsp; file"}</p><p class="mono">$ findmnt /boot/efi<br>/boot/efi &nbsp; /dev/sda1 &nbsp; vfat</p><p class="mono">$ sudo efibootmgr<br>Boot0001* ubuntu</p>`]
+ ];
+ const panel=panels.find(([id])=>id===s.panel);
+ return [panel?title(panel[1],"Verificação simulada de pós-instalação")+panel[2]:title(win?"Área de trabalho do Windows 11":"Área de trabalho do Ubuntu","Primeiro acesso concluído. Abra uma ferramenta na barra inferior para conferir a instalação."),""];
+}
+function desktopBar(){
+ const items=os==="windows"?[["Configurações","system"],["Windows Update","update"],["Dispositivos","drivers"]]:[["Configurações","system"],["Discos","disk"],["Terminal","terminal"]];
+ return `<div class="taskbar">${items.map(([label,key])=>btn(label,"inspect:"+key)).join("")}</div>`;
+}
+function render(moveFocus=false){
+ clearInterval(timer);
+ const s=lab(),phase=phases[s.page],route=tracks[os];
+ const isDesktop=s.page==="wdesk"||s.page==="udesk";
+ const firmware=["boot","grubiso","wreboot"].includes(s.page);
+ screen.className="screen "+(os==="ubuntu"?"ubuntu ":"")+(firmware?"uefi ":"")+(isDesktop?"desktop":"");
+ const [contents,buttons]=template();
+ screen.innerHTML=`<div class="window" aria-labelledby="screen-title"><div class="titlebar">${firmware?"Firmware da máquina virtual":s.page==="vm"?"Gerenciador da máquina virtual":names[os]}</div><div class="content">${contents}${notice()}</div>${buttons?`<div class="actions">${buttons}</div>`:""}</div>${isDesktop?desktopBar():""}`;
+ $("windows").setAttribute("aria-pressed",os==="windows");
+ $("ubuntu").setAttribute("aria-pressed",os==="ubuntu");
+ $("machine").textContent="VM simulada · "+names[os];
+ $("coach").textContent=route[phase][1];
+ $("step-count").textContent=`Etapa ${phase+1} de ${route.length}`;
+ $("lesson-progress").max=route.length;
+ $("lesson-progress").value=phase+1;
+ $("route").innerHTML=route.map(([label],i)=>`<li ${i===phase?'aria-current="step"':i<phase?'class="done"':""}>${label}</li>`).join("");
+ if(moveFocus)$("screen-title").focus({preventScroll:true});
+ if(s.page==="wprogress"||s.page==="uprogress")runProgress(s);
+}
+function go(page){
+ const s=lab();
+ s.stack.push(s.page);
+ s.page=page;
+ s.notice="";
+ s.panel="";
+ render(true);
+}
+function warn(message){
+ lab().notice=message;
+ $("feedback").textContent=message;
+}
+function runProgress(s){
+ const labels=s.page==="wprogress"?["Copiando arquivos do Windows","Preparando os arquivos para instalação","Instalando recursos","Preparando a reinicialização"]:["Criando sistemas de arquivos","Copiando arquivos e instalando pacotes","Configurando a conta e o sistema","Instalando o GRUB"];
+ const nextPage=s.page==="wprogress"?"wreboot":"ureboot";
+ timer=setInterval(()=>{
+  s.progress=Math.min(100,(s.progress??0)+5);
+  $("install-progress").value=s.progress;
+  $("progress-label").textContent=labels[Math.min(3,Math.floor(s.progress/25))]+" · "+s.progress+"%";
+  if(s.progress===100){clearInterval(timer);go(nextPage);}
+ },190);
+}
+const value=(name)=>screen.querySelector(`[name="${name}"]`)?.value;
+function handle(action){
+ const s=lab(),v=s.values;
+ if(action.startsWith("goto:")){
+  if(action==="goto:wprogress"||action==="goto:uprogress")s.progress=0;
+  return go(action.slice(5));
+ }
+ if(action.startsWith("inspect:")){
+  s.panel=action.slice(8);
+  return render(true);
+ }
+ switch(action){
+ case "back":
+  s.page=s.stack.pop();
+  s.notice=s.panel="";
+  return render(true);
+ case "attach":
+  s.iso=value("media")===files[os];
+  s.notice=s.iso?"":"Selecione a imagem ISO para conectar a mídia.";
+  return render();
+ case "power":return go("boot");
+ case "boot":
+  if(v.bootChoice==="disk")return warn("Nenhum sistema foi encontrado no SSD virtual. Inicie pela mídia de instalação.");
+  if(v.bootChoice!=="iso")return warn("Escolha um dispositivo de inicialização.");
+  if(!s.iso)return warn("A unidade está vazia. Volte e conecte a ISO.");
+  return go(os==="windows"?"wlang":"grubiso");
+ case "wsetup":
+  if(v.setup==="repair")return warn("Esta opção abre a recuperação do Windows. Para o exercício, escolha Instalar o Windows 11.");
+  if(!v.wipeWin)return warn("Confirme a instalação limpa para prosseguir.");
+  return go("wkey");
+ case "edition":
+  return v.edition==="Pro"?go("wlicense"):warn("A licença fictícia corresponde ao Windows 11 Pro. Selecione essa edição.");
+ case "wcreate":s.panel="wsize";s.notice="";return render();
+ case "wapply":
+  if(Number(value("size"))!==65536)return warn("Para esta demonstração, use toda a capacidade disponível. Digite 65536 MB.");
+  s.parts=winParts;
+  s.winDisk="main";
+  s.notice=s.panel="";
+  return render();
+ case "wdelete":s.panel="wdelete";s.notice="";return render();
+ case "wconfirmdel":
+  s.parts=[];
+  s.winDisk="free";
+  s.notice=s.panel="";
+  return render();
+ case "wdisk":
+  if(s.winDisk==="data")return warn("O Disco 1 contém arquivos. Selecione o SSD de 64 GB no Disco 0.");
+  if(s.winDisk!=="main"&&s.winDisk!=="free")return warn("Selecione a partição primária ou o espaço não alocado do SSD.");
+  return go("wreview");
+ case "wreboot":
+  if(v.wRestartChoice!=="ssd")return warn("Escolha Windows Boot Manager para continuar a configuração no SSD. A ISO abre o instalador novamente.");
+  return go("wregion");
+ case "wnetwork":
+  return v.winNet==="connected"?go("waccount"):warn("Selecione a Ethernet virtual para prosseguir com a configuração de demonstração.");
+ case "waccount":
+  return value("winAccount")===sampleAccount?go("wpin"):warn("Use somente o endereço fictício "+sampleAccount+".");
+ case "wpin":
+  if(value("pin")!=="2468")return warn("Use o PIN fictício 2468.");
+  delete v.pin;
+  return go("wprivacy");
+ case "utry":return go(v.try==="try"?"ulive":"utype");
+ case "utype":
+  return v.uType==="auto"?warn("A instalação automatizada usa um arquivo de configuração. Selecione a interativa para praticar cada etapa."):go("uapps");
+ case "udisk":return go(v.method==="manual"?"umanual":"uerase");
+ case "uerase":
+  return s.target==="ssd"?go("uaccount"):warn("O /dev/sdb contém os arquivos da turma. Escolha o /dev/sda de 64 GB.");
+ case "uadd":s.panel="uadd";s.notice="";return render();
+ case "uclear":s.manual=[];v.manualDisk="free";s.panel=s.notice="";return render();
+ case "uapply":{
+  const partition=value("partition"),mount=value("mount"),size=value("capacity");
+  const expected={
+   "Partição do sistema EFI":["efi","/boot/efi","1 GB"],
+   "Ext4":["root","/","55 GB"],
+   "Área de troca (swap)":["swap","Nenhum","4 GB"]
+  };
+  const [id,where,capacity]=expected[partition];
+  if(s.manual.includes(id))return warn("Essa partição já existe no SSD virtual.");
+  if(id==="root"&&!s.manual.includes("efi"))return warn("Crie a partição EFI antes da raiz para seguir o layout do exercício.");
+  if(id==="swap"&&!s.manual.includes("root"))return warn("Crie a partição raiz antes da swap para seguir o layout do exercício.");
+  if(mount!==where||size!==capacity)return warn("Layout do exercício: EFI com 1 GB em /boot/efi, ext4 com 55 GB em / e swap com 4 GB sem ponto de montagem.");
+  s.manual.push(id);
+  s.panel="";
+  s.notice="";
+  delete v.partition;
+  delete v.mount;
+  delete v.capacity;
+  return render();
+ }
+ case "umanual":
+  if(!s.manual.includes("efi")||!s.manual.includes("root"))return warn("Crie a partição EFI em /boot/efi e a raiz ext4 em /. A partição swap é opcional.");
+  return go("uaccount");
+ case "uaccount":{
+  const user=value("user"),host=value("host");
+  if(!value("person").trim()||!/^[a-z][a-z0-9_-]{0,30}$/.test(user)||!/^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/.test(host))return warn("Preencha o nome fictício. Use letras minúsculas no nome de usuário e no nome do computador.");
+  if(value("password")!=="lab12345"||value("confirm")!=="lab12345")return warn("Preencha os dois campos com a senha fictícia lab12345.");
+  return go("uzone");
+ }
+ case "eject":s.iso=false;s.notice="";return render();
+ case "ureboot":
+  return s.iso?warn("Remova a ISO virtual antes de iniciar pelo SSD."):go("ulogin");
+ case "ulogin":
+  if(value("login")!=="lab12345")return warn("Use a senha fictícia lab12345.");
+  delete v.login;
+  return go("udesk");
+ }
+}
+screen.addEventListener("click",event=>{
+ const button=event.target.closest("[data-action]");
+ if(button)handle(button.dataset.action);
+});
+screen.addEventListener("keydown",event=>{
+ if(event.key!=="Enter")return;
+ if(event.target.matches('input[type="text"],input[type="email"],input[type="password"],input[type="number"]')){
+  event.preventDefault();
+  const button=screen.querySelector(".actions .primary");
+  if(lab().panel==="wsize")handle("wapply");
+  else if(button)button.click();
+ }else if(lab().page==="ureboot"&&!event.target.closest("button")){
+  event.preventDefault();
+  handle("ureboot");
+ }
+});
+screen.addEventListener("input",event=>{
+ const input=event.target;
+ if(!input.name||input.name==="preview"||input.name==="inspection")return;
+ const s=lab();
+ if(["winDisk","target"].includes(input.name)){
+  const key=input.name;
+  s[key]=input.value;
+  s.panel=s.notice="";
+  render();
+  screen.querySelector(`input[name="${key}"]:checked`)?.focus({preventScroll:true});
+  return;
+ }
+ s.values[input.name]=input.type==="checkbox"?input.checked:input.value;
+ if(input.name==="manualDisk"){
+  s.panel=s.notice="";
+  render();
+  screen.querySelector('input[name="manualDisk"]:checked')?.focus({preventScroll:true});
+ }else if(s.notice){s.notice="";$("feedback").textContent="";}
+});
+for(const key of Object.keys(names)){
+ $(key).addEventListener("click",()=>{os=key;render();});
+}
+$("reset").addEventListener("click",()=>{labs[os]=initial();render(true);});
+$("full").addEventListener("click",async()=>{
+ try{
+  if(document.fullscreenElement)await document.exitFullscreen();
+  else await $("frame").requestFullscreen();
+ }catch{warn("O navegador bloqueou o modo de tela cheia.");}
+});
+document.addEventListener("fullscreenchange",()=>{$("full").textContent=document.fullscreenElement?"Sair da tela cheia":"Tela cheia";});
+const scenarios=[
+ ["Setor financeiro","Equipe usa Microsoft Office, ERP, videoconferência e uma impressora de rede.",{
+  "Windows Desktop":"Adequado para a estação interativa e para o conjunto de programas descrito."
+ },"Considere Windows Desktop para a estação interativa com Office e verifique os requisitos do ERP."],
+ ["Servidor de arquivos","80 pessoas precisam de pastas compartilhadas, permissões, backup e administração remota.",{
+  "Windows Server":"Adequado, especialmente com integração ao Active Directory e gerenciamento centralizado de permissões.",
+  "Linux Server":"Adequado, por exemplo com Samba, permissões configuradas e rotinas de backup."
+ },"Escolha uma edição Server. Windows Server e Linux Server podem atender, conforme a integração e a administração."],
+ ["Estação de desenvolvimento","Programador usa Docker, Git, terminal, bancos e VMs. Precisa de um ambiente próximo à produção Linux.",{
+  "Linux Desktop":"Adequado para o uso diário com ferramentas Linux e interface de estação de trabalho."
+ },"Linux Desktop atende ao trabalho interativo e aproxima as ferramentas do ambiente de produção descrito."]
+];
+$("scenarios").innerHTML=scenarios.map(([name,context],n)=>`<div class="case"><h3>${name}</h3><p>${context}</p><label class="field">Sistema operacional<select id="case-${n}"><option value="">Escolha</option>${["Windows Desktop","Windows Server","Linux Desktop","Linux Server"].map(label=>`<option>${label}</option>`).join("")}</select></label><button type="button" class="outer" data-case="${n}">Conferir</button><p id="answer-${n}" role="status"></p></div>`).join("");
+$("scenarios").addEventListener("click",event=>{
+ const button=event.target.closest("[data-case]");
+ if(!button)return;
+ const n=Number(button.dataset.case),chosen=$("case-"+n).value;
+ $("answer-"+n).textContent=chosen?(scenarios[n][2][chosen]??scenarios[n][3]):"Selecione um sistema para conferir.";
+});
+render();
+</script>
+</body>
+</html>
